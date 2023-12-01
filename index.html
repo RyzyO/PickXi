@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Australian 11</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #0D635D;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header img {
+      width: 80px;
+      height: 40px;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    .playerSelection {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .playerSelectionItem {
+      margin: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .playerImg {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    select {
+      padding: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+.share-buttons a,
+    .share-buttons button {
+      display: inline-block;
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #333;
+      margin-right: 10px;
+      background-color: #e0ffe0; /* Light green background */
+    }
+
+    .share-buttons button {
+      cursor: pointer;
+    }
+
+
+    .instructions {
+      padding: 20px;
+      background-color: #f3f3f3;
+      border-radius: 8px;
+      margin: 20px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="pickxi.png" alt="Your Logo">
+    <h1>&nbsp;</h1>
+    <div></div> <!-- Empty div for spacing -->
+  </header>
+  <div class="instructions">
+    <h2>Welcome!</h2>
+    <p>Select your 11 players for the First NRMA Test Match Between Australia and Pakistan by choosing from the dropdowns below. Use the buttons below to share your XI on social media.&nbsp;&nbsp;</p>
+  </div>
+  <div class="playerSelection" id="playerSelection">
+    <!-- This div will be populated dynamically -->
+  </div>
+
+ 
+  
+  <canvas id="imageCanvas" style="display: none;"></canvas>
+
+  <!-- Social Media Sharing Buttons -->
+  <div class="share-buttons">
+    <a href="#" onclick="shareOnTwitter()">Share on X</a>
+    <a href="#" onclick="shareOnFacebook()">Share on Facebook</a>
+	  <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  </div>
+
+<script>
+    const playerNames = [
+      "Select",
+      "Usman Khawaja",
+      "David Warner",
+      "Marnus Labuschagne",
+      "Steve Smith",
+      "Travis Head",
+      "Alex Carey",
+      "Cameron Green",
+      "Mitch Starc",
+      "Pat Cummins",
+      "Nathan Lyon",
+      "Josh Hazlewood",
+      "Josh Inglis",
+      "Ashton Agar",
+      "Jhye Richardson",
+      "Scott Boland",
+      "Michael Neser",
+      "Mitchell Marsh",
+      "Mitchell Swepson",
+      "Todd Murphy",
+      "Peter Handscomb",
+      "Matthew Kuhnemann"
+      // Add more player names
+    ];
+
+      const playerImageURLs = {
+      "Select": "https://static-files.cricket-australia.pulselive.com/headshots/288/placeholder.png",
+      "Usman Khawaja": "https://static-files.cricket-australia.pulselive.com/headshots/288/287-test.png",
+      "David Warner": "https://static-files.cricket-australia.pulselive.com/headshots/288/1189-test.png",
+      "Marnus Labuschagne": "https://static-files.cricket-australia.pulselive.com/headshots/288/348-test.png",
+      "Steve Smith": "https://static-files.cricket-australia.pulselive.com/headshots/288/1075-test.png",
+      "Travis Head": "https://static-files.cricket-australia.pulselive.com/headshots/288/288-test.png",
+      "Alex Carey": "https://static-files.cricket-australia.pulselive.com/headshots/288/291-test.png",
+      "Cameron Green": "https://static-files.cricket-australia.pulselive.com/headshots/288/804-test.png",
+      "Pat Cummins": "https://static-files.cricket-australia.pulselive.com/headshots/288/1149-test.png",
+      "Mitch Starc": "https://static-files.cricket-australia.pulselive.com/headshots/440/724-test.png",
+      "Josh Hazlewood": "https://static-files.cricket-australia.pulselive.com/headshots/288/1185-test.png",
+      "Nathan Lyon": "https://static-files.cricket-australia.pulselive.com/headshots/288/726-test.png",
+      "Josh Inglis": "https://static-files.cricket-australia.pulselive.com/headshots/440/1151-test.png",
+      "Ashton Agar": "https://static-files.cricket-australia.pulselive.com/headshots/288/292-test.png",
+      "Jhye Richardson": "https://static-files.cricket-australia.pulselive.com/headshots/288/294-test.png",
+      "Scott Boland": "https://static-files.cricket-australia.pulselive.com/headshots/288/802-test.png",
+      "Michael Neser": "https://static-files.cricket-australia.pulselive.com/headshots/288/293-test.png",
+      "Mitchell Marsh": "https://static-files.cricket-australia.pulselive.com/headshots/440/722-test.png",
+      "Mitchell Swepson": "https://static-files.cricket-australia.pulselive.com/headshots/440/295-test.png",
+      "Todd Murphy": "https://static-files.cricket-australia.pulselive.com/headshots/288/2941-camedia.png",
+      "Peter Handscomb": "https://static-files.cricket-australia.pulselive.com/headshots/288/289-test.png",
+      "Matthew Kuhnemann": "https://static-files.cricket-australia.pulselive.com/headshots/288/833-camedia.png"
+      // Add more player image URLs
+    };
+
+
+    function createPlayerSelection() {
+      const playerSelectionDiv = document.getElementById("playerSelection");
+
+      for (let i = 1; i <= 11; i++) {
+        const playerSelectionItem = document.createElement("div");
+        playerSelectionItem.classList.add("playerSelectionItem");
+
+        const playerImg = document.createElement("img");
+        playerImg.classList.add("playerImg");
+        playerImg.src = playerImageURLs[playerNames[0]]; // Set default image URL for "Select"
+        playerImg.alt = `Player ${i}`;
+
+        const label = document.createElement("label");
+        label.setAttribute("for", `player${i}`);
+        label.textContent = `${i}:`;
+
+        const select = document.createElement("select");
+        select.id = `player${i}`;
+        select.onchange = function() {
+          changePlayerImage(playerImg, this.value);
+        };
+
+        for (let j = 0; j < playerNames.length; j++) {
+          const option = document.createElement("option");
+          option.value = playerNames[j];
+          option.textContent = playerNames[j];
+          select.appendChild(option);
+        }
+
+        playerSelectionItem.appendChild(playerImg);
+        playerSelectionItem.appendChild(label);
+        playerSelectionItem.appendChild(select);
+
+        playerSelectionDiv.appendChild(playerSelectionItem);
+      }
+    }
+
+    function changePlayerImage(imgElement, playerName) {
+      imgElement.src = playerImageURLs[playerName] || playerImageURLs[playerNames[0]]; // Set default image URL for "Select"
+    }
+
+    function generateImage() {
+      const canvas = document.getElementById('imageCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw selected players' images on the canvas
+      const playerImages = [];
+      let y = 10;
+      for (let i = 1; i <= 11; i++) {
+        const selectedPlayer = document.getElementById(`player${i}`).value;
+        const playerImage = new Image();
+        playerImage.src = playerImageURLs[selectedPlayer]; // Get player's image URL
+        playerImages.push(playerImage);
+
+        playerImage.onload = function() {
+          ctx.drawImage(playerImage, 10, y, 80, 80); // Draw player image
+        };
+
+        y += 90;
+      }
+
+      // Convert canvas to image
+      const image = new Image();
+      image.src = canvas.toDataURL();
+
+      // Create a download link for the generated image
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image.src;
+      downloadLink.download = 'selected_players.png'; // Set the filename for the downloaded image
+      downloadLink.textContent = 'Download Image';
+
+      // Append the download link to the body
+      document.body.appendChild(downloadLink);
+
+      // Trigger download
+      downloadLink.click();
+
+      // Remove the download link from the document
+      document.body.removeChild(downloadLink);
+    }
+
+    // Function to share selected players on Twitter
+    function shareOnTwitter() {
+      const selectedPlayers = getSelectedPlayers(); // Replace this with your logic to get the selected players
+      const textToShare = `My selected Australian Test XI is: ${selectedPlayers.join(', ')}`;
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(textToShare)}`;
+      window.open(tweetUrl, '_blank');
+    }
+
+    // Function to share selected players on Facebook
+    function shareOnFacebook() {
+      const selectedPlayers = getSelectedPlayers(); // Replace this with your logic to get the selected players
+      const textToShare = `My selected Australian Test XI is: ${selectedPlayers.join(', ')}`;
+      const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=&quote=${encodeURIComponent(textToShare)}`;
+      window.open(fbUrl, '_blank');
+    }
+
+    // Function to retrieve selected players (replace this with your logic to get the selected players)
+    function getSelectedPlayers() {
+      const selectedPlayers = [];
+      for (let i = 1; i <= 11; i++) {
+        const playerName = document.getElementById(`player${i}`).value;
+        if (playerName !== 'Select') {
+          selectedPlayers.push(playerName);
+        }
+      }
+      return selectedPlayers;
+    }
+
+    createPlayerSelection();
+	
+	 function copyToClipboard() {
+    const selectedPlayers = getSelectedPlayers();
+    const textToCopy = `My selected Australian Test XI is: ${selectedPlayers.join(', ')}`;
+    
+    const textarea = document.createElement('textarea');
+    textarea.value = textToCopy;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'absolute';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    
+    textarea.select();
+    document.execCommand('copy');
+    
+    document.body.removeChild(textarea);
+    
+    alert('Players copied to clipboard!');
+  }
+</script>
+</body>
+</html>
+  </script>
+</body>
+</html>
